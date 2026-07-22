@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../../models/song_model.dart';
+import '../../core/config/app_config.dart';
 
 class MusicService {
   static MusicService? _instance;
   MusicService._();
   static MusicService get instance => _instance ??= MusicService._();
 
-  static const _baseUrl = 'http://127.0.0.1:9090';
+  static const _baseUrl = AppConfig.musicApiUrl;
   final Map<String, String> _streamCache = {};
 
   Future<List<SongModel>> search(String query, {int limit = 25}) async {
