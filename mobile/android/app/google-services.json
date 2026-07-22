@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18325106102",
+    "project_id": "tunebox-25",
+    "storage_bucket": "tunebox-25.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18325106102:android:8db955f3a41470bf2c2517",
+        "android_client_info": {
+          "package_name": "com.tunebox.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0jg9CJthiScXHe_jFhzht6DURqioqRpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

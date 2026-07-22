@@ -1,0 +1,33 @@
+abstract final class AppSpacing {
+  static const double xxs = 2.0;
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 20.0;
+  static const double xxl = 24.0;
+  static const double xxxl = 32.0;
+  static const double xxxxl = 40.0;
+  static const double xxxxxl = 48.0;
+  static const double sectionGap = 28.0;
+  static const double screenPadding = 16.0;
+  static const double cardPadding = 14.0;
+  static const double listGap = 8.0;
+  static const double chipGap = 8.0;
+  static const double iconGap = 8.0;
+  static const double buttonGap = 12.0;
+  static const double sectionHeaderGap = 14.0;
+  static const double appBarHeight = 56.0;
+  static const double miniPlayerHeight = 64.0;
+  static const double bottomNavHeight = 60.0;
+  static const double listItemHeight = 72.0;
+  static const double albumCoverSmall = 48.0;
+  static const double albumCoverMedium = 64.0;
+  static const double albumCoverLarge = 88.0;
+  static const double albumCoverXL = 120.0;
+  static const double albumCoverFullWidth = 280.0;
+  static const double artistAvatarSmall = 40.0;
+  static const double artistAvatarMedium = 56.0;
+  static const double artistAvatarLarge = 80.0;
+  static const double genreChipHeight = 36.0;
+}
