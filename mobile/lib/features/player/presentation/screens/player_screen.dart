@@ -20,6 +20,7 @@ class PlayerScreen extends ConsumerStatefulWidget {
 class _PlayerScreenState extends ConsumerState<PlayerScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotateController;
+  bool _hasAutoPlayed = false;
 
   @override
   void initState() {
@@ -29,6 +30,21 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
       duration: const Duration(seconds: 20),
     );
     _rotateController.repeat();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _autoPlay();
+    });
+  }
+
+  void _autoPlay() {
+    final currentSong = ref.read(currentSongProvider);
+    final audioService = ref.read(audioPlayerServiceProvider);
+    if (currentSong == null) return;
+    if (audioService.currentSong?.id != currentSong.id) {
+      _hasAutoPlayed = true;
+      final queue = ref.read(playerQueueProvider);
+      audioService.play(currentSong, queue: queue.isNotEmpty ? queue : null);
+      ref.read(isPlayingProvider.notifier).state = true;
+    }
   }
 
   @override
@@ -53,6 +69,12 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
           ),
         ),
       );
+    }
+
+    if (audioService.currentSong?.id != currentSong.id && !_hasAutoPlayed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _autoPlay();
+      });
     }
 
     return Scaffold(

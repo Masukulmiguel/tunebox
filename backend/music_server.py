@@ -9,6 +9,7 @@ import re
 
 PORT = 9090
 YTDLP_PATH = os.environ.get("YTDLP_PATH", "yt-dlp")
+YTDLP_COMMON_ARGS = ["--js-runtimes", "nodejs"]
 
 search_cache = {}
 stream_cache = {}
@@ -171,6 +172,7 @@ class MusicHandler(http.server.BaseHTTPRequestHandler):
             video_url = f"https://www.youtube.com/watch?v={video_id}"
             cmd = [
                 YTDLP_PATH,
+                "--js-runtimes", "nodejs",
                 "-f", "bestaudio[ext=m4a]/bestaudio/best",
                 "-g",
                 "--no-download",
