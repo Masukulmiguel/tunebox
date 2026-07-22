@@ -90,7 +90,6 @@ class AudioPlayerService {
       if (playId == _playRequestId) {
         _isLoading = false;
       }
-      rethrow;
     }
   }
 

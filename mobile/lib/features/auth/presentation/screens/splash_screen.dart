@@ -145,7 +145,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                   height: 100,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    gradient: AppColors.primaryGradient,
                                     boxShadow: [
                                       BoxShadow(
                                         color: AppColors.primaryPurple.withValues(alpha: 0.5),
@@ -153,10 +152,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                       ),
                                     ],
                                   ),
-                                  child: const Icon(
-                                    Icons.music_note_rounded,
-                                    color: Colors.white,
-                                    size: 52,
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      'assets/icons/icon.png',
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: AppColors.primaryGradient,
+                                        ),
+                                        child: const Icon(
+                                          Icons.music_note_rounded,
+                                          color: Colors.white,
+                                          size: 52,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
