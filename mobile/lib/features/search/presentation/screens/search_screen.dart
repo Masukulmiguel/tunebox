@@ -5,7 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/app_icons.dart';
-import '../../../../core/widgets/song_list_tile.dart';
+import '../../../../core/widgets/animated_song_list_tile.dart';
 import '../../../../core/widgets/shimmer_widget.dart';
 import '../../../home/presentation/providers/songs_provider.dart';
 import '../../../player/presentation/providers/player_provider.dart';
@@ -40,35 +40,46 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenPadding,
-                AppSpacing.md,
-                AppSpacing.screenPadding,
-                0,
-              ),
-            ),
+            const SizedBox(height: AppSpacing.md),
             Container(
               margin: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.screenPadding,
               ),
               decoration: BoxDecoration(
-                color: AppColors.darkSurfaceVariant,
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.darkSurfaceVariant,
+                    AppColors.darkElevated,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: _focusNode.hasFocus
-                      ? AppColors.primaryPurple
-                      : AppColors.darkBorder,
+                      ? AppColors.primaryPurple.withValues(alpha: 0.5)
+                      : AppColors.darkBorder.withValues(alpha: 0.5),
                   width: 1,
                 ),
+                boxShadow: _focusNode.hasFocus
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primaryPurple.withValues(alpha: 0.1),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
               ),
               child: Row(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 14),
                     child: Icon(
                       AppIcons.search,
-                      color: AppColors.textTertiary,
+                      color: _focusNode.hasFocus
+                          ? AppColors.primaryPurple
+                          : AppColors.textTertiary,
                       size: 20,
                     ),
                   ),
@@ -76,17 +87,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     child: TextField(
                       controller: _searchController,
                       focusNode: _focusNode,
-                      style: AppTypography.bodyLarge.copyWith(
+                      style: const TextStyle(
                         color: AppColors.textWhite,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
                       ),
                       decoration: const InputDecoration(
                         hintText: 'Pesquisar músicas, artistas...',
+                        hintStyle: TextStyle(
+                          color: AppColors.textTertiary,
+                          fontSize: 14,
+                        ),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 12,
-                          vertical: 12,
+                          vertical: 14,
                         ),
                       ),
                       onChanged: (value) {
@@ -96,9 +113,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                   if (_searchController.text.isNotEmpty)
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close_rounded,
-                        color: AppColors.textTertiary,
+                        color: AppColors.textTertiary.withValues(alpha: 0.7),
                         size: 20,
                       ),
                       onPressed: () {
@@ -122,32 +139,47 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     const SizedBox(width: AppSpacing.sm),
                 itemBuilder: (context, index) {
                   final isSelected = _selectedTab == _tabs[index];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedTab = _tabs[index]);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primaryPurple
-                            : AppColors.darkSurfaceVariant,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.primaryPurple
-                              : AppColors.darkBorder,
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() => _selectedTab = _tabs[index]);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 7,
                         ),
-                      ),
-                      child: Text(
-                        _tabs[index],
-                        style: AppTypography.labelMedium.copyWith(
+                        decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.textWhite
-                              : AppColors.textSecondary,
+                              ? AppColors.primaryGradientStart
+                              : AppColors.darkSurfaceVariant,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primaryPurple
+                                : AppColors.darkBorder.withValues(alpha: 0.5),
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Text(
+                          _tabs[index],
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
+                            color: isSelected
+                                ? AppColors.textWhite
+                                : AppColors.textSecondary.withValues(alpha: 0.8),
+                          ),
                         ),
                       ),
                     ),
@@ -162,32 +194,35 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   : searchResults.when(
                       data: (songs) {
                         if (songs.isEmpty) {
-                          return const Center(
+                          return Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   Icons.search_off_rounded,
-                                  size: 48,
-                                  color: AppColors.textTertiary,
+                                  size: 56,
+                                  color: AppColors.textTertiary.withValues(alpha: 0.5),
                                 ),
-                                SizedBox(height: AppSpacing.md),
+                                const SizedBox(height: AppSpacing.md),
                                 Text(
                                   'Nenhum resultado encontrado',
-                                  style: AppTypography.bodyMedium,
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ],
                             ),
                           );
                         }
                         return ListView.builder(
-                          padding: const EdgeInsets.only(
-                            top: AppSpacing.sm,
-                          ),
+                          padding: const EdgeInsets.only(top: AppSpacing.sm),
                           itemCount: songs.length,
                           itemBuilder: (context, index) {
                             final song = songs[index];
-                            return SongListTile(
+                            return AnimatedSongListTile(
+                              animIndex: index,
                               title: song.title,
                               subtitle: song.artistName,
                               coverUrl: song.coverUrl,
@@ -223,75 +258,108 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         children: [
           const Text(
             'Pesquisas Recentes',
-            style: AppTypography.titleMedium,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textWhite,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           ...['C4 Pedro', 'Kizomba Mix', 'Semba 2024'].map(
             (term) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.history_rounded,
-                    color: AppColors.textTertiary,
-                    size: 20,
+              child: GestureDetector(
+                onTap: () {
+                  _searchController.text = term;
+                  ref.read(songSearchProvider.notifier).search(term);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        _searchController.text = term;
-                        ref.read(songSearchProvider.notifier).search(term);
-                      },
-                      child: Text(
-                        term,
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
+                  decoration: BoxDecoration(
+                    color: AppColors.darkSurfaceVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.history_rounded,
+                        color: AppColors.textTertiary.withValues(alpha: 0.6),
+                        size: 18,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Text(
+                          term,
+                          style: TextStyle(
+                            color: AppColors.textSecondary.withValues(alpha: 0.8),
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
+                      Icon(
+                        Icons.north_west_rounded,
+                        color: AppColors.textTertiary.withValues(alpha: 0.5),
+                        size: 14,
+                      ),
+                    ],
                   ),
-                  const Icon(
-                    Icons.north_west_rounded,
-                    color: AppColors.textTertiary,
-                    size: 16,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),
           const Text(
             'Tendências Agora',
-            style: AppTypography.titleMedium,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textWhite,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           ...['Afrobeat Hits', 'Música Angolana', 'Kuduro Mix'].map(
             (term) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.trending_up_rounded,
-                    color: AppColors.primaryPurple,
-                    size: 20,
+              child: GestureDetector(
+                onTap: () {
+                  _searchController.text = term;
+                  ref.read(songSearchProvider.notifier).search(term);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        _searchController.text = term;
-                        ref.read(songSearchProvider.notifier).search(term);
-                      },
-                      child: Text(
-                        term,
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkSurfaceVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.primaryPurple.withValues(alpha: 0.1),
                     ),
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.trending_up_rounded,
+                        color: AppColors.primaryPurple.withValues(alpha: 0.8),
+                        size: 18,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Text(
+                          term,
+                          style: TextStyle(
+                            color: AppColors.textSecondary.withValues(alpha: 0.8),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
