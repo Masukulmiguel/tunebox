@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/song_repository.dart';
 import '../../../../models/song_model.dart';
@@ -43,26 +44,41 @@ final songSearchProvider =
 
 class SongSearchNotifier extends StateNotifier<AsyncValue<List<SongModel>>> {
   final Ref _ref;
+  Timer? _debounce;
 
   SongSearchNotifier(this._ref) : super(const AsyncValue.data([]));
 
-  Future<void> search(String query) async {
+  void search(String query) {
+    _debounce?.cancel();
     if (query.trim().isEmpty) {
       state = const AsyncValue.data([]);
       return;
     }
-    state = const AsyncValue.loading();
-    try {
-      final musicService = _ref.read(musicServiceProvider);
-      final results = await musicService.search(query, limit: 25);
-      state = AsyncValue.data(results);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    _debounce = Timer(const Duration(milliseconds: 600), () async {
+      state = const AsyncValue.loading();
+      try {
+        final musicService = _ref.read(musicServiceProvider);
+        final results = await musicService.search(query, limit: 25);
+        if (mounted) {
+          state = AsyncValue.data(results);
+        }
+      } catch (e, st) {
+        if (mounted) {
+          state = AsyncValue.error(e, st);
+        }
+      }
+    });
   }
 
   void clear() {
+    _debounce?.cancel();
     state = const AsyncValue.data([]);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 }
 
