@@ -26,7 +26,7 @@ jobs:
           channel: 'stable'
 
       - name: Build Web
-        run: cd mobile && flutter build web --release --base-href "/tunebox/"
+        run: cd mobile && flutter build web --release --base-href "/tunebox/" --dart-define=MUSIC_API_URL=https://tunebox-25.up.railway.app
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
