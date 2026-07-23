@@ -9,6 +9,9 @@ build/
 pubspec.lock
 *.lock
 test.json
+test_deploy.js
+test_new_deploy.js
+test_itunes.json
 
 # Android
 android/.gradle/

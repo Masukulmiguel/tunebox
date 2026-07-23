@@ -1,0 +1,11 @@
+{
+  "name": "tunebox-music-api",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@distube/ytdl-core": "^4.14.4"
+  }
+}
