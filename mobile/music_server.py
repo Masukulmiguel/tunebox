@@ -22,6 +22,42 @@ USER_AGENTS = [
 ]
 
 
+def prefetch_stream(video_id):
+    with cache_lock:
+        if video_id in stream_cache:
+            return
+    try:
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
+        ua = random.choice(USER_AGENTS)
+        cmd = [
+            YTDLP_PATH,
+            "--js-runtimes", "nodejs",
+            "-f", "bestaudio[ext=m4a]/bestaudio/best",
+            "-g",
+            "--no-download",
+            "--user-agent", ua,
+            "--extractor-args", "youtube:player_client=web,android",
+            video_url
+        ]
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=25,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            stream_url = result.stdout.strip().split("\n")[0]
+            with cache_lock:
+                stream_cache[video_id] = stream_url
+    except Exception:
+        pass
+
+
+def prefetch_songs(songs, count=5):
+    ids = [s["id"] for s in songs[:count] if s.get("id")]
+    for vid in ids:
+        with cache_lock:
+            if vid not in stream_cache:
+                threading.Thread(target=prefetch_stream, args=(vid,), daemon=True).start()
+
+
 class MusicHandler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
@@ -93,10 +129,7 @@ class MusicHandler(http.server.BaseHTTPRequestHandler):
             ]
 
             result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=30,
+                cmd, capture_output=True, text=True, timeout=30,
             )
 
             if result.returncode != 0:
@@ -138,6 +171,8 @@ class MusicHandler(http.server.BaseHTTPRequestHandler):
                 if len(search_cache) > 200:
                     oldest = list(search_cache.keys())[0]
                     del search_cache[oldest]
+
+            prefetch_songs(songs, count=5)
 
             self.send_response(200)
             self._set_cors()
@@ -194,10 +229,7 @@ class MusicHandler(http.server.BaseHTTPRequestHandler):
                 ]
 
                 result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=20,
+                    cmd, capture_output=True, text=True, timeout=25,
                 )
 
                 if result.returncode == 0 and result.stdout.strip():
