@@ -52,15 +52,13 @@ class MusicService {
       return _streamCache[videoId];
     }
     try {
-      final url = '$_baseUrl/stream?id=${Uri.encodeComponent(videoId)}';
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
-      if (response.statusCode != 200) return null;
-      final data = json.decode(response.body);
-      final streamUrl = data['stream_url'] as String?;
-      if (streamUrl != null) {
-        _streamCache[videoId] = streamUrl;
+      final url = '$_baseUrl/audio?id=${Uri.encodeComponent(videoId)}';
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200) {
+        _streamCache[videoId] = url;
+        return url;
       }
-      return streamUrl;
+      return null;
     } catch (e) {
       debugPrint('Stream URL error: $e');
       return null;
