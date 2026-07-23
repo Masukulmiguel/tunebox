@@ -83,6 +83,7 @@ class MusicHandler(http.server.BaseHTTPRequestHandler):
             ua = random.choice(USER_AGENTS)
             cmd = [
                 YTDLP_PATH,
+                "--js-runtimes", "nodejs",
                 "--dump-json",
                 "--flat-playlist",
                 "--no-download",
@@ -183,6 +184,7 @@ class MusicHandler(http.server.BaseHTTPRequestHandler):
             for attempt in range(3):
                 cmd = [
                     YTDLP_PATH,
+                    "--js-runtimes", "nodejs",
                     "-f", "bestaudio[ext=m4a]/bestaudio/best",
                     "-g",
                     "--no-download",
